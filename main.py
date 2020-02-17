@@ -4,7 +4,9 @@ import time
 from PIL import Image
 from flask import Flask, render_template, request, send_from_directory, url_for
 import logging
-from tensorboard._vendor.tensorflow_serving.config import logging_config_pb2
+
+from recipe import Recipe
+from predict import Food_classification
 
 app = Flask(__name__)
 
@@ -12,7 +14,7 @@ app = Flask(__name__)
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
 # 업로드 경로(폴더)
-UPLOAD_PATH = "static/upload"
+UPLOAD_PATH = "static/upload/"
 
 
 # main
@@ -31,7 +33,6 @@ def test2():
 def check_file_ext(ext):
     return ext in ALLOWED_EXTENSIONS
 
-
 # 썸네일 이미지 생성
 def create_thumbnail_image(filename):
     thumbnail_path = UPLOAD_PATH + "thumb_" + filename  # 썸네일 이미지 저장 경로 + 파일명
@@ -40,7 +41,7 @@ def create_thumbnail_image(filename):
         # 원본 이미지에서 썸네일 이미지를 생성
         img = Image.open(UPLOAD_PATH + filename)  # 원본 이미지 열기
         img = img.convert("RGB")
-        img.thumbnail((1000, 1000), Image.ANTIALIAS)
+        img.thumbnail((500, 500), Image.ANTIALIAS)
 
         # 썸네일 이미지 저장
         img.save(thumbnail_path)
@@ -70,11 +71,9 @@ def upload_file():
 
         # 파일 존재여부와 파일 확장자 체크
         if img_file and check_file_ext(o_file_ext):
-            timestamp_str = time.strftime("%Y%m%d-%H%M%S")  # 현재 timestamp
+            timestamp_str = time.strftime("%Y%m%d-%H%M%S")  # 파일명 생성을 위한 timestamp
             save_file_name = timestamp_str + o_file_ext
             save_path = UPLOAD_PATH + save_file_name  # 저장할 경로
-
-            print("save_path : " + save_path)
 
             # 파일 저장
             img_file.save(save_path)
@@ -84,7 +83,25 @@ def upload_file():
 
         return render_template("run.html", thumb_img_name=thumbnail_filename)
 
+# 음식 예측하기
+@app.route("/predict", methods=["GET", "POST"])
+def predict():
+    filename = ""
+    print("predict() filename : " + filename)
+    food_name, probability = Food_classification(filename).predict_food().get_predicted()
+    recipe_txt = get_recipe(food_name)
+
+    #return render_template("run.html", predict_result=[food_name, probability], recipe_txt=recipe_txt)
+    return render_template("run.html")
+
+# 조리법 가져오기
+#@app.route("/recipe/<food_name>")
+def get_recipe(food_name):
+    return Recipe(food_name).get_recipe()
+
+
+
 
 # 실행
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port="5555", debug=True)  # http://127.0.0.1:5555
+    app.run(host="0.0.0.0", port="5555", debug=True)  # http://127.0.0.1:5555

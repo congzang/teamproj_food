@@ -7,8 +7,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<!-- # Bootstrap CSS -->
 	
-	<title>HOME</title>
-	
+	<title>사진 속 음식 조리법 추천</title>
 </head>
 <body>
 <div class="flex-grow-1 d-flex flex-column">
@@ -24,19 +23,14 @@
 							        <div class="card border-primary h-100">
 							            <div class="card-body d-flex flex-column align-items-start">
 							                <h4 class="card-title text-primary">Step 1. 사진 업로드</h4>
-							                <p class="card-text">조리법을 검색할 음식 사진을 업로드하세요.</p>
-							                <form action="/fileUpload" method="POST" enctype="multipart/form-data">
+							                <p class="card-text">음식의 사진을 업로드하세요.</p>
+							                <form id="frm_upload" action="/fileUpload" method="POST" enctype="multipart/form-data">
 								                <div class="custom-file mb-3">
 								                	<input type="file" name="img_file" class="custom-file-input" readonly>
 								                	<label class="custom-file-label" for="customFile">음식 사진을 선택하세요.</label>
 								                </div>
-							                	<input type="submit" class="form-control btn btn-primary align-bottom btn-lg" value="업로드">
+							                	<input type="button" id="btn_upload" class="form-control btn btn-primary align-bottom btn-lg" value="업로드">
 							                </form>
-							                {% if thumb_img_name %}
-								                <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;">
-				                                    <img src="{{ url_for('download_thumbnail', filename=thumb_img_name) }}" width="200" height="150">
-					                            </div>
-				                            {% endif %}
 							            </div>
 							        </div>
 							    </div>
@@ -51,7 +45,15 @@
 							            <div class="card-body d-flex flex-column align-items-start">
 							                <h4 class="card-title text-primary">Step 2. 음식 예측</h4>
 							                <p class="card-text">사진 속 음식 예측 결과입니다.</p>
-							                <h2>이 음식은 '김치찌개'일 확률이 99.6%입니다.</h2>
+                                            {% if thumb_img_name %}
+                                                <img src="{{ url_for('download_thumbnail', filename=thumb_img_name) }}" id="img_thumnail" class="mx-auto d-block">
+                                                <form id="frm_predict" action="/predict" method="POST">
+                                                    <input type="text" id="in_filename" value="{{ thumb_img_name }}">
+                                                </form>
+				                            {% endif %}
+							                <div class="mx-auto d-block mt-3">
+                                                <h2>이 음식은 '김치찌개'일 확률이 99.6%입니다.</h2>
+                                            </div>
 							            </div>
 							        </div>
 							        
@@ -140,11 +142,24 @@
 <!-- # Bootstrap script -->
 
 <script>
-	// file input에서 파일 선택 시 선택한 파일명으로 input값 변경
+
 	$(".custom-file-input").on("change", function() {
-	  var fileName = $(this).val().split("\\").pop();
-	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	    // file input에서 파일 선택 시 선택한 파일명으로 input값 변경
+	    var fileName = $(this).val().split("\\").pop();
+	    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 	});
+
+	// 업로드 버튼 event
+	$("#btn_upload").on("click", function() {
+        $("#frm_upload").submit();
+    });
+
+	// 썸네일 이미지 load event
+	$("#img_thumnail").on("load", function() {
+        // 음식명 예측하고 조리법 가져오기
+        $("#frm_predict").submit();
+    });
+
 </script>
 </body>
 </html>
