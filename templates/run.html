@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Bootstrap CSS -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- # Bootstrap CSS -->
+	
+	<title>HOME</title>
+	
+</head>
+<body>
+<div class="flex-grow-1 d-flex flex-column">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xl-9 col-lg-10 mx-auto" id="content">
+				<div class="row">
+					<div class="col-md pt-5">
+						<!-- 이미지 업로드 영역 -->
+						<section id="upload_area" class="bg-faded py-2">
+							<div class="row">
+								<div class="col-xl-12 col-lg-4 mb-4">
+							        <div class="card border-primary h-100">
+							            <div class="card-body d-flex flex-column align-items-start">
+							                <h4 class="card-title text-primary">Step 1. 사진 업로드</h4>
+							                <p class="card-text">조리법을 검색할 음식 사진을 업로드하세요.</p>
+							                <form action="/fileUpload" method="POST" enctype="multipart/form-data">
+								                <div class="custom-file mb-3">
+								                	<input type="file" name="img_file" class="custom-file-input" readonly>
+								                	<label class="custom-file-label" for="customFile">음식 사진을 선택하세요.</label>
+								                </div>
+							                	<input type="submit" class="form-control btn btn-primary align-bottom btn-lg" value="업로드">
+							                </form>
+							                {% if thumb_img_name %}
+								                <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;">
+				                                    <img src="{{ url_for('download_thumbnail', filename=thumb_img_name) }}" width="200" height="150">
+					                            </div>
+				                            {% endif %}
+							            </div>
+							        </div>
+							    </div>
+						    </div>
+					    </section>
+					    
+					    <!-- 예측 결과 영역 -->
+						<section id="predict_area" class="bg-faded py-2">
+							<div class="row">
+								<div class="col-xl-12 col-lg-4 mb-4">
+							        <div class="card border-primary h-100">
+							            <div class="card-body d-flex flex-column align-items-start">
+							                <h4 class="card-title text-primary">Step 2. 음식 예측</h4>
+							                <p class="card-text">사진 속 음식 예측 결과입니다.</p>
+							                <h2>이 음식은 '김치찌개'일 확률이 99.6%입니다.</h2>
+							            </div>
+							        </div>
+							        
+							        
+							    </div>
+						    </div>
+					    </section>
+					    
+					    <!-- 재료 영역 -->
+						<!-- <section id="ingredient_area" class="bg-faded py-2">
+							<div class="row">
+								<div class="col-xl-12 col-lg-4 mb-4">
+							        <div class="card border-primary h-100">
+							            <div class="card-body d-flex flex-column align-items-start">
+							                <h4 class="card-title text-primary">Step 3. 재료</h4>
+							                <p class="card-text">조리에 필요한 재료입니다.</p>
+							                <span>김치, 돼지고기 등등..</span>
+							            </div>
+							        </div>
+							        
+							        
+							    </div>
+						    </div>
+					    </section> -->
+					    
+					    <!-- 조리법 영역 -->
+						<section id="recipe_area" class="bg-faded py-2">
+							<div class="row">
+								<div class="col-xl-12 col-lg-4 mb-4">
+							        <div class="card border-primary h-100">
+							            <div class="card-body d-flex flex-column align-items-start">
+							                <h4 class="card-title text-primary">Step 3. 조리법</h4>
+							                <p class="card-text">조리법 입니다.</p>
+							                <span>재료를 손질한 후에 물을 끓입니다.</span>
+							            </div>
+							        </div>
+							        
+							        
+							    </div>
+						    </div>
+					    </section>
+					    
+						<!-- <div id="upload_area">
+					        <span>조리법을 찾아낼 음식 사진을 업로드하세요.</span>
+							<form role="form">
+							    <div class="form-group row">
+							        <div class="col-md-4">
+							            <input id="i_img_path" class="form-control" type="text">
+							        </div>
+							    </div>
+								<button type="button" id="b_upload" class="btn btn-primary align-bottom btn-lg mr-1">업로드</button>
+							</form>
+							<img src="">
+						</div> -->
+					
+					
+					
+						
+						<!-- 결과 출력 영역 -->
+						<!-- <div id="result_area">
+							모델 출력 결과 영역
+							<div id="model_area">
+								<span id="model_result_text">이 음식은 김치찌개일 확률이 99.8%입니다.</span>
+							</div>
+							
+							
+							조리법 출력 영역
+							<div id="recipe_area">
+								<table id="t_recipe">
+									<tr><td>1</td><td>재료를 손질합니다.</td></tr>
+									<tr><td>2</td><td>김치를 넣고 약 15분간 끓입니다.<br>물이 넘치지 않도록 하세요.</td></tr>
+								</table>
+							</div>
+						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Bootstrap script -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- # Bootstrap script -->
+
+<script>
+	// file input에서 파일 선택 시 선택한 파일명으로 input값 변경
+	$(".custom-file-input").on("change", function() {
+	  var fileName = $(this).val().split("\\").pop();
+	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+</script>
+</body>
+</html>
