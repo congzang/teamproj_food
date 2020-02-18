@@ -1,12 +1,15 @@
+import logging
 import os
 import time
-
+import tensorflow as tf
+from keras.models import load_model
+from keras.backend import set_session
 from PIL import Image
-from flask import Flask, render_template, request, send_from_directory, url_for
-import logging
+from flask import Flask, render_template, request, send_from_directory
+import json
 
-from recipe import Recipe
 from predict import Food_classification
+from recipe import Recipe
 
 app = Flask(__name__)
 
@@ -20,14 +23,7 @@ UPLOAD_PATH = "static/upload/"
 # main
 @app.route("/")
 def main():
-    return render_template("bootstrap_example.html")
-
-
-# TODO : 우선 테스트 페이지
-@app.route("/run")
-def test2():
     return render_template("run.html")
-
 
 # 파일 확장자 체크
 def check_file_ext(ext):
@@ -66,7 +62,7 @@ def upload_file():
     if request.method == "POST":
         img_file = request.files["img_file"]
 
-        o_file_ext = os.path.splitext(img_file.filename)[1]  # 원본파일 확장자
+        o_file_ext = os.path.splitext(img_file.filename)[1].lower()  # 원본파일 확장자
         thumbnail_filename = ""
 
         # 파일 존재여부와 파일 확장자 체크
@@ -86,22 +82,32 @@ def upload_file():
 # 음식 예측하기
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
-    filename = ""
-    print("predict() filename : " + filename)
-    food_name, probability = Food_classification(filename).predict_food().get_predicted()
-    recipe_txt = get_recipe(food_name)
+    filename = request.form["in_filename"].replace("thumb_", "")
 
-    #return render_template("run.html", predict_result=[food_name, probability], recipe_txt=recipe_txt)
-    return render_template("run.html")
+    food_name, probability = Food_classification(model, sess, graph, filename).get_predicted()
+    recipe_txt =  Recipe(food_name).get_recipe()
+
+    result = {"food_name" : food_name,
+              "probability" : probability,
+              "recipe_step_list" : recipe_txt}
+
+    return json.dumps(result, ensure_ascii=False)
 
 # 조리법 가져오기
-#@app.route("/recipe/<food_name>")
 def get_recipe(food_name):
     return Recipe(food_name).get_recipe()
 
-
-
-
 # 실행
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5555", debug=True)  # http://127.0.0.1:5555
+    global model
+    print("******* 모델이 로딩된 후에 서비스를 시작합니다. *******")
+
+    global graph
+    global sess
+    sess = tf.Session()
+    set_session(sess)
+    graph = tf.get_default_graph()
+
+    model = load_model("./model/food_classification.model")
+
+    app.run(host="0.0.0.0", port="5555")  # http://127.0.0.1:5555

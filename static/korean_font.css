@@ -1,0 +1,7 @@
+@import url(https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css);
+
+html,body {
+    font-family:"NanumSquare" !important;
+    font-size : 1.2em;
+    font-weight: bold;
+}
