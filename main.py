@@ -5,6 +5,7 @@ import tensorflow as tf
 from keras.models import load_model
 from keras.backend import set_session
 from PIL import Image
+
 from flask import Flask, render_template, request, send_from_directory
 import json
 
@@ -61,6 +62,7 @@ def download_thumbnail(filename):
 def upload_file():
     if request.method == "POST":
         img_file = request.files["img_file"]
+        user_lang = request.form["user_lang"]
 
         o_file_ext = os.path.splitext(img_file.filename)[1].lower()  # 원본파일 확장자
         thumbnail_filename = ""
@@ -77,15 +79,17 @@ def upload_file():
             # 화면에 출력하기 위한 thumbnail 생성
             thumbnail_filename = create_thumbnail_image(save_file_name)
 
-        return render_template("run.html", thumb_img_name=thumbnail_filename)
+        return render_template("run.html", thumb_img_name=thumbnail_filename, user_lang=user_lang)
 
 # 음식 예측하기
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
     filename = request.form["in_filename"].replace("thumb_", "")
+    trans_lang = request.form["sel_user_lang"]
 
     food_name, probability = Food_classification(model, sess, graph, filename).get_predicted()
-    recipe_txt =  Recipe(food_name).get_recipe()
+
+    recipe_txt =  Recipe(food_name, trans_lang).get_recipe()
 
     result = {"food_name" : food_name,
               "probability" : probability,
@@ -107,7 +111,6 @@ if __name__ == "__main__":
     sess = tf.Session()
     set_session(sess)
     graph = tf.get_default_graph()
-
     model = load_model("./model/food_classification.model")
 
     app.run(host="0.0.0.0", port="5555")  # http://127.0.0.1:5555

@@ -2,13 +2,17 @@ import urllib.request
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 import re
+import requests
 
 class Recipe:
 
     # 초기화
-    def __init__(self, food_name):
+    def __init__(self, food_name, trans_lang):
         self.food_name = food_name
+        self.trans_lang = trans_lang
         self.recipe_step = []
+        self.API_REQUEST_URL = "https://kapi.kakao.com/v1/translation/translate?src_lang=kr&target_lang={user_lang}&query={before_txt}"
+        self.API_REQUEST_HEADERS = {"Authorization": "KakaoAK "}
 
     # 만개의 레시피에서 조리법 크롤링
     def crawling_recipe(self):
@@ -37,7 +41,22 @@ class Recipe:
             step_list = bsp.find_all("div", {"id": re.compile("^stepdescr")})
 
             for step in step_list:
-                self.recipe_step.append(step.text)
+                txt = step.text
+
+                if self.trans_lang != "ko":
+                    txt = self.translate_text(txt)
+
+                self.recipe_step.append(txt)
+
+    # 번역
+    def translate_text(self, before_txt):
+        api_url = self.API_REQUEST_URL.format(**{"user_lang" : self.trans_lang, "before_txt" : before_txt})
+        response = requests.get(api_url, headers=self.API_REQUEST_HEADERS)
+
+        data = response.json()
+        trans_txt = data["translated_text"]
+
+        return trans_txt
 
     # 조리법 얻어오기
     def get_recipe(self):

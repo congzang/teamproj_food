@@ -8,13 +8,17 @@
     <link rel="stylesheet" href="../static/korean_font.css">
 	<!-- # Bootstrap CSS -->
 
+    <!-- fullpage CSS -->
+    <link rel="stylesheet" href="../static/fullpage.css" />
+    <!-- #fullpage CSS -->
+
     <style type="text/css">
         .circle_text {
             font-size: 1em;
             width: 1.7em;
             border-radius: 1em;
             padding: .1em .2em;
-            line-height: 1.7em;
+            line-height: 1.5em;
             display: inline-block;
             text-align: center;
             background-color: #007BFF;
@@ -26,80 +30,122 @@
 	<title>사진 속 음식 조리법 추천</title>
 </head>
 <body>
-<div class="flex-grow-1 d-flex flex-column">
+<div id="full-page" class="flex-grow-1 d-flex flex-column">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xl-9 col-lg-10 mx-auto" id="content">
 				<div class="row">
 					<div class="col-md pt-5">
-						<!-- 이미지 업로드 영역 -->
-						<section id="upload_area" class="bg-faded py-2">
-                            <!-- Title -->
-                            <div class="d-flex my-3">
-                                <div class="w-100 py-5 mx-auto">
-                                    <h1 class="display-3">사진 속 음식은 무엇일까?</h1>
-                                    <p class="lead">음식이 있는 사진을 업로드하면 사진 속의 음식을 판별하고 그 음식의 조리법을 알려줍니다.</p>
-                                </div>
-                            </div>
 
-							<div class="row">
-								<div class="col-xl-12 col-lg-4 mb-4">
-							        <div class="card border-primary h-100">
-							            <div class="card-body d-flex flex-column align-items-start">
-							                <h4 class="card-title text-primary">Step 1. 사진 업로드</h4>
-							                <p class="card-text">음식의 사진을 업로드하세요.</p>
-							                <form id="frm_upload" action="/fileUpload" method="POST" enctype="multipart/form-data">
-								                <div class="custom-file mb-3">
-								                	<input type="file" name="img_file" class="custom-file-input" readonly>
-								                	<label class="custom-file-label" for="customFile">음식 사진을 선택하세요.</label>
-								                </div>
-							                	<input type="button" id="btn_upload" class="form-control btn btn-primary align-bottom btn-lg" value="업로드">
-							                </form>
-							            </div>
-							        </div>
-							    </div>
-						    </div>
-					    </section>
-					    
-					    <!-- 예측 결과 영역 -->
-						<section id="predict_area" class="bg-faded py-2">
-							<div class="row">
-								<div class="col-xl-12 col-lg-4 mb-4">
-							        <div class="card border-primary h-100">
-							            <div class="card-body d-flex flex-column align-items-start">
-							                <h4 class="card-title text-primary">Step 2. 음식 예측</h4>
-							                <p class="card-text">사진 속 음식 예측 결과입니다.</p>
-                                            {% if thumb_img_name %}
-                                                <img src="{{ url_for('download_thumbnail', filename=thumb_img_name) }}" id="img_thumbnail" class="mx-auto d-block">
-                                                <form id="frm_predict" action="/predict" method="POST" class="invisible">
-                                                    <input type="text" name="in_filename" value="{{ thumb_img_name }}">
-                                                </form>
-				                            {% endif %}
-							                <div id="predict_txt" class="mx-auto d-block mt-3 invisible">
-                                                <h2>이 음식은 '<span id="food_name"></span>'일 확률이 <span id="probability"></span>%입니다.</h2>
+                        <!-- 사용자 언어 선택 영역 -->
+                        <div class="section s0">
+                            <section id="upload_area" class="bg-faded py-2">
+                                <!-- Title -->
+                                <div class="d-flex">
+                                    <div class="w-100 py-3 mx-auto">
+                                        <h1 class="display-2">사진 속 음식은 무엇일까?</h1>
+                                        <p class="lead">음식이 있는 사진을 업로드하면 사진 속의 음식을 판별하고 그 음식의 조리법을 알려줍니다.</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xl-10 col-lg-4 mb-4">
+                                        <div class="card border-primary h-100">
+                                            <div class="card-body d-flex flex-column align-items-start">
+                                                <h4 class="card-title text-primary">Step 0. 사용자 언어 선택</h4>
+                                                <p class="card-text">내가 사용하는 언어를 선택하세요.</p>
+                                                <select id="sel_user_lang" name="sel_user_lang" class="custom-select-lg p-3 h-50">
+                                                    <option value="ko">한국어</option>
+                                                    <option value="en">English</option>
+                                                    <option value="cn">汉语</option>
+                                                    <option value="vi">tiếng Việt</option>
+                                                    <option value="fr">français</option>
+                                                </select>
                                             </div>
-							            </div>
-							        </div>
-							        
-							        
-							    </div>
-						    </div>
-					    </section>
-					    
-					    <!-- 조리법 영역 -->
-						<section id="recipe_area" class="bg-faded py-2">
-							<div class="row">
-								<div class="col-xl-12 col-lg-4 mb-4">
-							        <div class="card border-primary h-100">
-							            <div class="card-body d-flex flex-column align-items-start">
-							                <h4 class="card-title text-primary">Step 3. 조리법</h4>
-							                <p class="card-text">사진 속 음식의 조리법 입니다.</p>
-                                            <div id="div_recipe_step"></div>
-							            </div>
-							        </div>
-							    </div>
-						    </div>
-					    </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+						<!-- 이미지 업로드 영역 -->
+                        <div class="section s1">
+                            <section id="upload_area" class="bg-faded py-2">
+                                <!-- Title -->
+                                <div class="d-flex">
+                                    <div class="w-100 py-3 mx-auto">
+                                        <h1 class="display-2">사진 속 음식은 무엇일까?</h1>
+                                        <p class="lead">음식이 있는 사진을 업로드하면 사진 속의 음식을 판별하고 그 음식의 조리법을 알려줍니다.</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xl-10 col-lg-4 mb-4">
+                                        <div class="card border-primary h-100">
+                                            <div class="card-body d-flex flex-column align-items-start">
+                                                <h4 class="card-title text-primary">Step 1. 사진 업로드</h4>
+                                                <p class="card-text">음식의 사진을 업로드하세요.</p>
+                                                <form id="frm_upload" action="/fileUpload" method="POST" enctype="multipart/form-data">
+                                                    <div class="custom-file mb-3">
+                                                        <input type="file" id="img_file" name="img_file" class="custom-file-input" readonly>
+                                                        <label class="custom-file-label" for="customFile">내 컴퓨터에서 사진을 선택하세요.</label>
+                                                        <input type="hidden" id="user_lang" name="user_lang">
+                                                    </div>
+                                                    <input type="button" id="btn_upload" class="form-control btn btn-primary align-bottom btn-lg" value="업로드">
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- 예측 결과 영역 -->
+                        <div class="section s2">
+                            <section id="predict_area" class="bg-faded py-2">
+                                <div class="row">
+                                    <div class="col-xl-10 col-lg-4 mb-4">
+                                        <div class="card border-primary h-100">
+                                            <div class="card-body d-flex flex-column align-items-start">
+                                                <h4 class="card-title text-primary">Step 2. 음식 예측</h4>
+                                                <p class="card-text">사진 속 음식의 예측결과입니다.</p>
+                                                {% if thumb_img_name %}
+                                                    <img src="{{ url_for('download_thumbnail', filename=thumb_img_name) }}" id="img_thumbnail" class="mx-auto d-block">
+                                                    <img id="img_thumbnail" class="mx-auto d-block">
+                                                    <form id="frm_predict" action="/predict" method="POST" class="invisible">
+                                                        <input type="text" name="in_filename" value="{{ thumb_img_name }}">
+                                                    </form>
+                                                {% endif %}
+                                                <div id="predict_txt" class="mx-auto d-block mt-3 invisible">
+                                                    <h2 class="pb-3">이 사진 속의 음식은 <span id="food_name" class="bg-success text-white font-weight-bold p-3"></span> 입니다.</h2>
+                                                    <span id="move_recipe_txt" class="bg-warning text-white p-2" style="cursor:pointer;">이 음식은 어떻게 만들지?</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- 조리법 영역 -->
+                        <div class="section s3">
+                            <section id="recipe_area" class="bg-faded py-2">
+                                <div class="row">
+                                    <div class="col-xl-10 col-lg-4 mb-4">
+                                        <div class="card border-primary h-100">
+                                            <div class="card-body d-flex flex-column align-items-start">
+                                                <h4 class="card-title text-primary">Step 3. 조리법</h4>
+                                                <p class="card-text">사진 속 음식의 조리법 입니다. (출처 : 만개의 레시피)</p>
+                                                <div id="div_recipe_step"></div>
+                                                <span id="move_upload_txt" class="bg-warning text-white p-2" style="cursor:pointer;">다른 음식도 궁금해!</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
 
 					</div>
 				</div>
@@ -108,14 +154,36 @@
 	</div>
 </div>
 
+<div class="spinner-border"></div>
+
 <!-- Bootstrap script -->
 <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <!-- # Bootstrap script -->
 
+<!-- fullpage script -->
+<script src="../static/fullpage.js"></script>
+<!-- # fullpage script -->
+
 <script type="text/javascript">
     $(document).ready(function () {
+        new fullpage('#full-page', {
+                        licenseKey : '',
+                        navigation: true,
+                        navigationTooltips: ['userlang', 'upload', 'predict', 'recipe'],
+                        slideNavigation: true,
+                        scrollingSpeed: 700,
+                        continuousVertical: true,
+                        onLeave: function(origin, destination, direction){
+                        },
+                        afterLoad: function(origin, destination, direction){
+                        }
+        });
+
+        {% if user_lang %}
+            $("#sel_user_lang").val("{{ user_lang }}");
+        {% endif %}
     });
 
 	$(".custom-file-input").on("change", function() {
@@ -131,19 +199,44 @@
 
 	// 업로드 버튼 event
 	$("#btn_upload").on("click", function() {
-        $("#frm_upload").submit();
+	    $("#user_lang").val($("#sel_user_lang").val());
+	    $("#frm_upload").submit();
+    });
+
+	// 조리법 궁금 text event
+	$("#move_recipe_txt").on("click", function() {
+	    fullpage_api.moveSectionDown();
+    });
+
+	// 다른 음식 궁금 text event
+	$("#move_upload_txt").on("click", function() {
+	    fullpage_api.moveTo(2);
+    });
+
+	$("#sel_user_lang").on("change", function() {
+	    fullpage_api.moveSectionDown();
+
+        // 이전 결과 초기화
+	    $("img").attr("src", "");
+	    $("#predict_txt").addClass("invisible");
+	    $("#div_recipe_step div").remove();
     });
 
 	// 썸네일 이미지 load event
 	$("#img_thumbnail").on("load", function() {
         // 음식명 예측하고 조리법 가져오기
         if( $(this).attr("src") != "" ) {
+            fullpage_api.moveSectionDown();
+            fullpage_api.moveSectionDown();
+
+            var predict_param = $("#frm_predict").serialize() + "&sel_user_lang=" + $("#sel_user_lang").val();
+
             $.ajax({
                 url: "/predict",
                 type: "POST",
-                data: $("#frm_predict").serialize(),
+                data: predict_param,
                 success: function (data) {
-                    result = JSON.parse(data);
+                    var result = JSON.parse(data);
 
                     // 음식명 출력
                     $("#food_name").text(result.food_name);
@@ -151,21 +244,22 @@
                     $("#predict_txt").removeClass("invisible");
 
                     // 조리법 출력
-                    step_list = result.recipe_step_list;
+                    var step_list = result.recipe_step_list;
 
                     if( step_list != null && step_list.length > 0 ) {
                         $.each(step_list, function(i, item) {
-                            stepHTML = "<div class='mb-4'><span class='circle_text'>" + (i+1) + "</span><span>" + item + "</span></div>";
+                            var stepHTML = "<div class='mb-3'><span class='circle_text'>" + (i+1) + "</span><span>" + item + "</span></div>";
                             $("#div_recipe_step").append(stepHTML);
                         });
 
                     // 조리법을 찾지 못한 경우 메시지 출력
                     } else {
-                        stepHTML = "<div class='mx-auto d-block w-100 p-3 mb-2 bg-danger text-white'>죄송합니다! 이 음식은 조리법을 찾을 수 없네요ㅠㅠ</div>";
+                        var stepHTML = "<div class='mx-auto d-block w-100 p-3 mb-2 bg-danger text-white'>죄송합니다! 이 음식은 조리법을 찾을 수 없네요ㅠㅠ</div>";
                         $("#div_recipe_step").append(stepHTML);
                     }
                 }
             });
+
         }
     });
 
